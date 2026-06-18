@@ -10,24 +10,31 @@ import CoreData
 
 struct ContentView: View {
     @State private var counter: Int = 0
+    @State private var allTodos: [TodoModel] = []
+    @StateObject private var todoVM = TodoViewModel(dataSourceRepository: TodoLocalDataSource())
     var body: some View {
-        Text("Add")
-            .onTapGesture {
-                counter += 1
-                let todo = TodoModel(title: "Hello \(counter)", isCompleted: false, createdAt: Date(), syncStatus: .pending)
-                Task {
-                    let added = try await TodoLocalDataSource().addData(todo)
-                    print("*** added: \(added)")
-                }
-            }
 
-        Text("FetchAll")
+        List($todoVM.todos, id: \.id) { $todo in
+            TodoListView(title: $todo.title, isCompleted: $todo.isCompleted)
+                .onChange(of: todo.isCompleted) { _, _ in
+
+                }
+                .onChange(of: todo.title) { _, _ in
+
+                }
+        }
+        .listStyle(.grouped)
+        .onAppear {
+            Task {
+                await todoVM.fetchTodos()
+            }
+        }
+
+        Text("Add Todo")
             .onTapGesture {
                 counter += 1
-                let todo = TodoModel(title: "Hello \(counter)", isCompleted: false, createdAt: Date(), syncStatus: .pending)
                 Task {
-                    let allTodos = try await TodoLocalDataSource().fetchAllData()
-                    print("*** allTodos: \(allTodos)")
+                    await todoVM.addTodo(title: "Hello \(counter)")
                 }
             }
     }

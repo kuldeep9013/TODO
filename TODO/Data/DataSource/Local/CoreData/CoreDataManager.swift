@@ -26,6 +26,7 @@ final class CoreDataManager {
     var viewContext: NSManagedObjectContext {
         persistentContainer.viewContext
     }
+
 }
 // MARK: CRUD methods
 extension CoreDataManager {
@@ -37,19 +38,16 @@ extension CoreDataManager {
 
     @discardableResult
     func create<T: NSManagedObject>(type: T) throws -> T {
-        let newTodo = T(context: viewContext)
         try save(context: viewContext)
-        return newTodo
+        return type
     }
 
     func fetchAll<T: NSManagedObject>(type: T.Type, predicate: NSPredicate? = nil, sortDescriptors: [NSSortDescriptor]? = nil) throws -> [T] {
-        let request = T.fetchRequest()
+        let entityName = String(describing: type)
+        let request = NSFetchRequest<T>(entityName: entityName)
         request.predicate = predicate
         request.sortDescriptors = sortDescriptors
-        guard let typedRequest = request as? NSFetchRequest<T> else {
-            return []
-        }
-        let todos: [T] = try viewContext.fetch(typedRequest)
+        let todos: [T] = try viewContext.fetch(request)
         return todos
     }
 
@@ -62,5 +60,15 @@ extension CoreDataManager {
         viewContext.delete(type)
         try save(context: viewContext)
         return type
+    }
+
+    func deleteAll<T: NSManagedObject>(_ type: T.Type) throws {
+        let entityName = String(describing: type)
+
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+
+        try viewContext.execute(deleteRequest)
+        try save(context: viewContext)
     }
 }

@@ -16,7 +16,7 @@ class TodoLocalDataSource: DataSourceRepository {
     func fetchAllData() async throws -> [TodoModel] {
         let todoEntities = try coreDataManager.fetchAll(type: TodoEntity.self)
         let todos = todoEntities.compactMap { todoEntity in
-            return TodoModel(id: todoEntity.id, title: todoEntity.title, isCompleted: todoEntity.isCompleted, createdAt: todoEntity.createdAt ?? Date(), syncStatus: SyncStatus(rawValue: todoEntity.syncStatus ?? "pending") ?? .pending)
+            return TodoModel(id: todoEntity.id, title: todoEntity.title ?? "", isCompleted: todoEntity.isCompleted, createdAt: todoEntity.createdAt ?? Date(), syncStatus: SyncStatus(rawValue: todoEntity.syncStatus ?? "pending") ?? .pending)
         }
         return todos
     }
@@ -41,6 +41,16 @@ class TodoLocalDataSource: DataSourceRepository {
     }
 
     func deleteData(with id: String) async throws {
-
+        let predicate = NSPredicate(format: "id == %@", id)
+        guard let todo = try coreDataManager.fetchFirst(
+            TodoEntity.self,
+            predicate: predicate
+        ) else {
+            return
+        }
+        try coreDataManager.delete(type: todo)
+    }
+    func deleteAllData() async throws {
+        try coreDataManager.deleteAll(TodoEntity.self)
     }
 }

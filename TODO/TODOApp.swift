@@ -10,7 +10,6 @@ import CoreData
 
 @main
 struct TODOApp: App {
-
     var body: some Scene {
         WindowGroup {
             ContentView()

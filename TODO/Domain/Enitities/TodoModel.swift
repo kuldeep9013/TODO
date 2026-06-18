@@ -7,14 +7,14 @@
 
 import Foundation
 
-struct TodoModel {
+struct TodoModel: Identifiable {
     let id: String?
-    var title: String?
+    var title: String
     var isCompleted: Bool
     var createdAt: Date
     var syncStatus: SyncStatus
 
-    init(id: String? = UUID().uuidString, title: String? = nil, isCompleted: Bool, createdAt: Date, syncStatus: SyncStatus) {
+    init(id: String? = UUID().uuidString, title: String, isCompleted: Bool = false, createdAt: Date = Date(), syncStatus: SyncStatus = .pending) {
         self.id = id
         self.title = title
         self.isCompleted = isCompleted
