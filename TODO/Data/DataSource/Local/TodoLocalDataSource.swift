@@ -36,8 +36,20 @@ class TodoLocalDataSource: DataSourceRepository {
         return data
     }
 
-    func updateData(_ data: TodoModel) async throws {
-
+    @discardableResult
+    func updateData(_ data: TodoModel) async throws -> TodoModel? {
+        let predicate = NSPredicate(format: "id == %@", data.id ?? "")
+        let existingTodo = try coreDataManager.fetchFirst(
+            TodoEntity.self,
+            predicate: predicate
+        )
+        existingTodo?.id = data.id
+        existingTodo?.title = data.title
+        existingTodo?.isCompleted = data.isCompleted
+        existingTodo?.createdAt = data.createdAt
+        existingTodo?.syncStatus =  data.syncStatus.rawValue
+        try coreDataManager.update()
+        return data
     }
 
     func deleteData(with id: String) async throws {

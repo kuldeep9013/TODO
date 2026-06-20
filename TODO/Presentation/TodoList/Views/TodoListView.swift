@@ -22,28 +22,21 @@ struct TodoListView: View {
                     isCompleted.toggle()
                 }
             }
-            TextField("", text: $title)
-                .focused($isTextFieldFocused)
-                .onChange(of: isTextFieldFocused) { oldValue, newValue in
-                    if oldValue == true && newValue == false {
-                        didEndEditing()
-                    }
-                }
-
+            TextField("Write your next todo", text: $title)
                 .foregroundStyle(isCompleted ? .gray : .black)
+                .disabled(isCompleted)
+                .font(.title2.monospaced())
+
         }
+        .frame(height: 64)
         .padding()
         .background(
-//            RoundedRectangle(cornerRadius: 6,
-//                             style: .circular)
-//            .fill(Color.accentColor)
-//            .shadow(color: .black.opacity(0.1), radius: 16, x: 4, y: 16)
+            RoundedRectangle(cornerRadius: 24,
+                             style: .circular)
+            .fill(Color.tile)
+            .shadow(color: .black.opacity(0.1), radius: 16, x: 4, y: 12)
         )
 
-    }
-
-    func didEndEditing() {
-        // update todo
     }
 }
 

@@ -42,6 +42,10 @@ extension CoreDataManager {
         return type
     }
 
+    func update() throws {
+        try save(context: viewContext)
+    }
+
     func fetchAll<T: NSManagedObject>(type: T.Type, predicate: NSPredicate? = nil, sortDescriptors: [NSSortDescriptor]? = nil) throws -> [T] {
         let entityName = String(describing: type)
         let request = NSFetchRequest<T>(entityName: entityName)

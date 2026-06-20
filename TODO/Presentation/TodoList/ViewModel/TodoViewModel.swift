@@ -37,7 +37,23 @@ class TodoViewModel: ObservableObject {
             }
         } catch {
             print("Error while adding todo: \(error)")
+        }
+    }
 
+    func updateTodo(todo: TodoModel) async {
+        guard !todo.title.isEmpty else {return} // empty validation
+        do {
+            try await dataSourceRepository.updateData(todo)
+        } catch {
+            print("Error while adding todo: \(error)")
+        }
+    }
+
+    func deleteAllTodos() async {
+        do {
+            try await dataSourceRepository.deleteAllData()
+        } catch {
+            print("Error while adding todo: \(error)")
         }
     }
 }

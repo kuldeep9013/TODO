@@ -10,7 +10,8 @@ protocol DataSourceRepository<DataSource> {
     func fetchAllData() async throws -> [DataSource]
     func fetchData(with id: String) async throws -> DataSource?
     func addData(_ data: DataSource) async throws -> DataSource?
-    func updateData(_ data: DataSource) async throws
+    @discardableResult
+    func updateData(_ data: DataSource) async throws -> DataSource?
     func deleteData(with id: String) async throws
     func deleteAllData() async throws
 }
