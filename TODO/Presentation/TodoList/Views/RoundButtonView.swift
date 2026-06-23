@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-struct AddButtonView: View {
-
+struct RoundButtonView: View {
+    var imageName: String?
     var body: some View {
-        Image(systemName: "plus")
+        Image(systemName: imageName ?? "plus")
             .padding()
             .background(
                 Circle()
-                    .fill(Color.brown)
+                    .fill(Color.tile)
                     .shadow(radius: 16)
             )
 
@@ -23,5 +23,5 @@ struct AddButtonView: View {
 }
 
 #Preview {
-    AddButtonView()
+    RoundButtonView()
 }

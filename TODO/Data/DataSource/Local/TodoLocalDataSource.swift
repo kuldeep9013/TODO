@@ -14,7 +14,14 @@ class TodoLocalDataSource: DataSourceRepository {
     private let coreDataManager = CoreDataManager.shared
 
     func fetchAllData() async throws -> [TodoModel] {
-        let todoEntities = try coreDataManager.fetchAll(type: TodoEntity.self)
+        let sortDescriptors = [
+            NSSortDescriptor(keyPath: \TodoEntity.isCompleted, ascending: true),
+            NSSortDescriptor(keyPath: \TodoEntity.createdAt, ascending: false)
+        ]
+        let todoEntities = try coreDataManager.fetchAll(
+            type: TodoEntity.self,
+            sortDescriptors: sortDescriptors
+        )
         let todos = todoEntities.compactMap { todoEntity in
             return TodoModel(id: todoEntity.id, title: todoEntity.title ?? "", isCompleted: todoEntity.isCompleted, createdAt: todoEntity.createdAt ?? Date(), syncStatus: SyncStatus(rawValue: todoEntity.syncStatus ?? "pending") ?? .pending)
         }
@@ -46,7 +53,7 @@ class TodoLocalDataSource: DataSourceRepository {
         existingTodo?.id = data.id
         existingTodo?.title = data.title
         existingTodo?.isCompleted = data.isCompleted
-        existingTodo?.createdAt = data.createdAt
+        existingTodo?.createdAt = Date()
         existingTodo?.syncStatus =  data.syncStatus.rawValue
         try coreDataManager.update()
         return data

@@ -10,6 +10,7 @@ import CoreData
 
 struct ContentView: View {
     @State private var counter: Int = 0
+    @State private var isAddTodoPresented: Bool = false
     @State private var allTodos: [TodoModel] = []
     @State private var textChangeTask: Task<Void, Never>?
 
@@ -25,7 +26,7 @@ struct ContentView: View {
                     .onChange(of: todo.title) { _, _ in
                         textChangeTask?.cancel()
                         textChangeTask = Task {
-                            try? await Task.sleep(for: .milliseconds(600))
+                            try? await Task.sleep(for: .milliseconds(400))
                             guard !Task.isCancelled else { return }
                             updateTodo(todo: todo)
                         }
@@ -38,6 +39,7 @@ struct ContentView: View {
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
             .background(Color.clear)
+            .scrollDismissesKeyboard(.immediately)
             .onAppear {
                 Task {
                     await todoVM.fetchTodos()
@@ -45,15 +47,21 @@ struct ContentView: View {
             }
         }.padding(8)
             .overlay(
-                AddButtonView()
+                RoundButtonView()
                     .onTapGesture {
-                        counter += 1
-                        Task {
-                            await todoVM.addTodo(title: "Hello \(counter)")
-                        }
+//                        counter += 1
+//                        Task {
+//                            await todoVM.addTodo(title: "Hello \(counter)")
+//                        }
+                        isAddTodoPresented = true
                     }
+                    .sheet(
+                        isPresented: $isAddTodoPresented) {
+                            AddTodoView(todoVM: todoVM)
+                        }
                     .padding(),
                 alignment: .bottomTrailing
+
             )
             .background(Color.bg)
 
@@ -63,6 +71,7 @@ struct ContentView: View {
                     await todoVM.deleteAllTodos()
                 }
             }
+
     }
 
     func updateTodo(todo: TodoModel) {

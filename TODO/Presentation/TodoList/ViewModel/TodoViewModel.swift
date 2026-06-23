@@ -31,7 +31,7 @@ class TodoViewModel: ObservableObject {
         do {
             let todo = TodoModel(title: title)
             if let addedToto = try await dataSourceRepository.addData(todo) {
-                todos.append(addedToto)
+                todos.insert(addedToto, at: 0)
             } else {
                 print("Error while adding todo")
             }
